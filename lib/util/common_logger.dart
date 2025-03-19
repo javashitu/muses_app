@@ -7,7 +7,7 @@ class CommonLogger {
 
   factory CommonLogger() => commonLogger;
 
-  var logger = Logger();
+  var logger = Logger(level: Level.info);
 
   void info(
     dynamic message, {
@@ -15,7 +15,8 @@ class CommonLogger {
     Object? error,
     StackTrace? stackTrace,
   }) {
-    logger.i(message, time: time, error: error, stackTrace: stackTrace);
+    print(message);
+    // logger.i(message, time: time, error: error, stackTrace: stackTrace);
   }
 }
 

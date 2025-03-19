@@ -89,8 +89,19 @@ class _LiveViewPageState extends State<LiveViewPage> {
               reverse: false,
               itemBuilder: (context, index) {
                 if (_loadCount == 0) {
-                  return const Center(
-                    child: Text("当前没有直播"),
+                  // Expanded(
+                  //     child: );
+                  return Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text("当前没有直播"),
+                          const SizedBox(height: 8),
+                          ElevatedButton(
+                              onPressed: _pubLive, child: const Text("开始直播"))
+                        ]),
                   );
                 }
                 LiveProgramInfo liveProgramInfo = pubFlag
@@ -115,7 +126,7 @@ class _LiveViewPageState extends State<LiveViewPage> {
                       _liveCloseCallback(roomIdParam, indexParam),
                   liveViewElementIndex: index,
                 );
-                return liveViewElement;
+                return Center(child: liveViewElement);
               },
             );
           }
@@ -126,15 +137,16 @@ class _LiveViewPageState extends State<LiveViewPage> {
       body: Column(
         children: [
           Expanded(child: futureBuilder),
-          ElevatedButton(
-              onPressed: _listOtherLive, child: const Text("查询现在进行的直播")),
+          // ElevatedButton(
+          //     onPressed: _listOtherLive, child: const Text("查询现在进行的直播")),
+          // Expanded(child: ElevatedButton(onPressed: _pubLive(), child: const Text("开始直播"))),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _pubLive,
-        tooltip: "call",
-        child: const Icon(Icons.phone),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _pubLive,
+      //   tooltip: "call",
+      //   child: const Icon(Icons.phone),
+      // ),
     );
   }
 

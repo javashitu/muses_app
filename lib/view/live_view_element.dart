@@ -136,19 +136,152 @@ class _LiveViewElementState extends State<LiveViewElement> {
     log.info(
         "will build the liveViewElement's scaffold，the pub flag is ${widget.pubFlag}");
     return Scaffold(
-      body: Center(
-          child: Column(
+      body: Stack(
         children: [
-          Expanded(child: Column(children: rtcVideoViewList)),
-          Container(
-                  // margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                  width: 300,
-                  height: 30,
-                  child: ElevatedButton(
-                      onPressed: _openCameraAndPubStream,
-                      child: Text("已经进入直播间我也要发布视频")))
+          // 下层：视频网格居中显示
+          Positioned.fill(
+            child: Center(
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width,
+                  maxHeight:
+                      MediaQuery.of(context).size.height - 100, // 为按钮预留底部空间
+                ),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 1.0,
+                  ),
+                  itemCount: rtcVideoViewList.length,
+                  itemBuilder: (context, index) => rtcVideoViewList[index],
+                ),
+              ),
+            ),
+          ),
+
+          // 上层：悬浮底部按钮
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      )
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            backgroundColor:
+                                const Color.fromARGB(255, 242, 232, 235),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4)),
+                            ),
+                          ),
+                          onPressed: _openCameraAndPubStream,
+                          child: const Text(
+                            "直播上麦",
+                            style: TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
+                        ),
+                      )),
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            backgroundColor:
+                                const Color.fromARGB(255, 242, 232, 235),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4)),
+                            ),
+                          ),
+                          onPressed: _hangUpPubStream,
+                          child: const Text(
+                            "挂断连麦",
+                            style: TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
+                        ),
+                      )),
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            backgroundColor:
+                                const Color.fromARGB(255, 242, 232, 235),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4)),
+                            ),
+                          ),
+                          onPressed: _leaveLive,
+                          child: const Text(
+                            "退出直播",
+                            style: TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
+                        ),
+                      )),
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            backgroundColor:
+                                const Color.fromARGB(255, 242, 232, 235),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4)),
+                            ),
+                          ),
+                          onPressed: _closeLive,
+                          child: const Text(
+                            "结束直播",
+                            style: TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
+                        ),
+                      )),
+                    ],
+                  )),
+            ),
+          )
         ],
-      )),
+      ),
     );
   }
 
@@ -279,6 +412,18 @@ class _LiveViewElementState extends State<LiveViewElement> {
     } catch (e) {
       log.info(e.toString());
     }
+  }
+
+  _hangUpPubStream() async {
+    log.info("will hang up the stream by pub nearlly ");
+  }
+
+  _leaveLive() async {
+    log.info("leave the live room, and hang up my stream  ");
+  }
+
+  _closeLive() async {
+    log.info("close the live room, and hang up all stream  ");
   }
 
   _doEnterRoom(String roomId, String userId, String userName) async {
