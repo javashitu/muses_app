@@ -23,7 +23,8 @@ class _LiveViewPageState extends State<LiveViewPage> {
   //这个pageIndex不是滑动翻页的页码，而是去查询直播数据时的页码
   int _pageIndex = 0;
   int _loadCount = 0;
-  bool pubFlag = false;
+  bool _joinFlag = false;
+  bool _pubFlag = false;
 
   late PageController _pageController;
 
@@ -47,6 +48,35 @@ class _LiveViewPageState extends State<LiveViewPage> {
     activeliveProgramInfo.addAll(liveProgramInfoList);
     _loadCount = activeliveProgramInfo.length;
     // });
+  }
+
+  _joinLive() {
+    log.info("will join the live ");
+    setState(() {
+      _joinFlag = true;
+    });
+  }
+
+  Widget _buildLiveElement(LiveProgramInfo liveProgramInfo, int index) {
+    String connectUrl = liveProgramInfo.liveAddress["url"];
+    String connectionId = liveProgramInfo.liveAddress["connectionId"];
+    String roomId = liveProgramInfo.liveAddress["roomId"];
+    String token = liveProgramInfo.liveAddress["token"];
+    String userId = connectionId;
+    log.info("generate liveViewElement, the pubFlag is $_joinFlag");
+    LiveViewElement liveViewElement = LiveViewElement(
+      pubFlag: _joinFlag,
+      roomId: roomId,
+      userId: userId,
+      token: token,
+      connectionId: connectionId,
+      connectUrl: connectUrl,
+      closeCallback: (roomIdParam, indexParam, closeFlag) => Future.delayed(
+          Duration.zero,
+          () => _liveCloseCallback(roomIdParam, indexParam, closeFlag)),
+      liveViewElementIndex: index,
+    );
+    return Center(child: liveViewElement);
   }
 
   @override
@@ -104,29 +134,29 @@ class _LiveViewPageState extends State<LiveViewPage> {
                         ]),
                   );
                 }
-                LiveProgramInfo liveProgramInfo = pubFlag
-                    ? activeliveProgramInfo[activeliveProgramInfo.length - 1]
-                    : activeliveProgramInfo[index % _loadCount];
+                if (!_joinFlag) {
+                  LiveProgramInfo liveProgramInfo =
+                      activeliveProgramInfo[index % _loadCount];
+                  var userId = liveProgramInfo.createUserId;
+                  // var buttonName = "加入${userId}的直播";
+                  return Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Text("当前没有直播"),
+                          // const SizedBox(height: 8),
+                          ElevatedButton(
+                              onPressed: _joinLive,
+                              child: Text("加入${userId}的直播"))
+                        ]),
+                  );
+                }
+                LiveProgramInfo liveProgramInfo =
+                    activeliveProgramInfo[index % _loadCount];
 
-                String connectUrl = liveProgramInfo.liveAddress["url"];
-                String connectionId =
-                    liveProgramInfo.liveAddress["connectionId"];
-                String roomId = liveProgramInfo.liveAddress["roomId"];
-                String token = liveProgramInfo.liveAddress["token"];
-                String userId = connectionId;
-                log.info("generate liveViewElement, the pubFlag is $pubFlag");
-                LiveViewElement liveViewElement = LiveViewElement(
-                  pubFlag: pubFlag,
-                  roomId: roomId,
-                  userId: userId,
-                  token: token,
-                  connectionId: connectionId,
-                  connectUrl: connectUrl,
-                  closeCallback: (roomIdParam, indexParam) =>
-                      _liveCloseCallback(roomIdParam, indexParam),
-                  liveViewElementIndex: index,
-                );
-                return Center(child: liveViewElement);
+                return _buildLiveElement(liveProgramInfo, index);
               },
             );
           }
@@ -142,11 +172,6 @@ class _LiveViewPageState extends State<LiveViewPage> {
           // Expanded(child: ElevatedButton(onPressed: _pubLive(), child: const Text("开始直播"))),
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _pubLive,
-      //   tooltip: "call",
-      //   child: const Icon(Icons.phone),
-      // ),
     );
   }
 
@@ -156,7 +181,8 @@ class _LiveViewPageState extends State<LiveViewPage> {
           "pub live finished, add liveProgramInfo to list and rebuild livePage");
       String roomId = liveProgramInfo.liveAddress["roomId"];
 
-      pubFlag = true;
+      _joinFlag = true;
+      _pubFlag = true;
       log.info("pub live finish the room $roomId ");
       setState(() => _addLive([liveProgramInfo]));
     });
@@ -170,20 +196,35 @@ class _LiveViewPageState extends State<LiveViewPage> {
     });
   }
 
-  _liveCloseCallback(String roomId, int index) {
-    int removeIndex =
-        pubFlag ? activeliveProgramInfo.length - 1 : index % _loadCount;
-    log.info(
-        "live has close,do _liveCloseCallback,remove closed live ，the removeIndex $removeIndex, the roomId $roomId, the index $index ");
-    LiveProgramInfo liveProgramInfo = activeliveProgramInfo[index];
-    if (liveProgramInfo.liveRoomId != roomId) {
-      log.info(
-          "under liveCloseCallback, the callback roomId not equals liveProgramInfo.roomId, the callback roomId $roomId the liveProgramInfo.roomId ${liveProgramInfo.liveRoomId}");
+  _liveCloseCallback(String roomId, int index, bool closeFlag) {
+    _joinFlag = false;
+    _pubFlag = false;
+    int removeIndex = index % _loadCount;
+    LiveProgramInfo? liveProgramInfo;
+    if (closeFlag) {
+      if (activeliveProgramInfo.isNotEmpty) {
+//退出后不一定要移除,但是直播关闭时移除
+        liveProgramInfo = activeliveProgramInfo.removeAt(removeIndex);
+      }
+    } else {
+      liveProgramInfo = activeliveProgramInfo[index];
+    }
+
+    if (liveProgramInfo == null) {
+      log.info("liveProgramInfo is null, skipping callback.");
       return;
     }
 
+    log.info(
+        "live has close,do _liveCloseCallback,remove closed live ，the removeIndex $removeIndex, the roomId $roomId, the index $index ");
+    if (liveProgramInfo.liveRoomId != roomId) {
+      log.info(
+          "under liveCloseCallback, the callback roomId not equals liveProgramInfo.roomId, the callback roomId $roomId the liveProgramInfo.roomId ${liveProgramInfo.liveRoomId}");
+      // return;
+    }
+
     setState(() {
-      activeliveProgramInfo.removeAt(removeIndex);
+      _loadCount = activeliveProgramInfo.length;
     });
   }
 }

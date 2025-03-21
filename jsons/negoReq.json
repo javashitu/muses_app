@@ -1,0 +1,26 @@
+{
+    "protoType": "nego",
+    "roomId": "3234167710566621227R",
+    "userId": "9527334",
+    "userName": "9527334",
+    "negoPubFlag": false,
+    "signalType": "ice",
+    "signalMessage": {
+        "candidate": "candidate:506418691 1 udp 2113937151 097b1f80-57ee-438a-8bb7-cbacaffa85c3.local 53444 typ host generation 0 ufrag /snL network-cost 999",
+        "sdpMid": "0",
+        "sdpMLineIndex": 0,
+        "usernameFragment": "/snL"
+    },
+    "pubStream": {
+        "streamId": "pub9527336_1730816876689_0",
+        "userId": "9527336",
+        "pubFlag": true,
+        "audio": true,
+        "video": true
+    },
+    "subStream": {
+        "streamId": "sub9527334_1730816879337_0",
+        "userId": "9527334",
+        "pubFlag": false
+    }
+}

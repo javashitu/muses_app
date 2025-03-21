@@ -68,10 +68,11 @@ class _LiveViewElementState extends State<LiveViewElement> {
 
   //RTC模型
   late MediaStream _mediaStream;
+  //自己发布的流
   Map<String, RtcStream> pubStreamMap = {};
   //value为RtcPeerConnection和rtcVideoRender的pair
   Map<String, RtcPeerRendererStream> pubPeerMap = {};
-
+  //自己用来订阅的流，还有别人用来订阅自己的流
   Map<String, RtcStream> subStreamMap = {};
   Map<String, RtcPeerRendererStream> subPeerMap = {};
 
@@ -357,7 +358,7 @@ class _LiveViewElementState extends State<LiveViewElement> {
     }
     if (liveCloseFlag) {
       log.info("live has close, will callback to live page");
-      widget.closeCallback(widget.roomId, widget.liveViewElementIndex);
+      widget.closeCallback(widget.roomId, widget.liveViewElementIndex, true);
     }
   }
 
@@ -396,15 +397,22 @@ class _LiveViewElementState extends State<LiveViewElement> {
         pubReq.roomId = widget.roomId;
         pubReq.userId = widget.userId;
 
-        var pubStream = {
-          "streamId": pubStreamId,
-          "userId": widget.userId,
-          "pubFlag": true,
-          "audio": true,
-          "video": true
-        };
+        // var pubStream = {
+        //   "streamId": pubStreamId,
+        //   "userId": widget.userId,
+        //   "pubFlag": true,
+        //   "audio": true,
+        //   "video": true
+        // };
+        RtcStream pubStream = RtcStream();
+        pubStream.streamId = pubStreamId;
+        pubStream.userId = widget.userId;
+        pubStream.pubFlag = true;
+        pubStream.audio = true;
+        pubStream.video = true;
+        pubStreamMap[pubStreamId] = pubStream;
 
-        pubReq.pubStream = pubStream;
+        pubReq.pubStream = pubStream.toJson();
         pubReq.subStream = "";
         log.info("emit to server pubReq");
         socketIoClient.emit(pubReq);
@@ -416,10 +424,41 @@ class _LiveViewElementState extends State<LiveViewElement> {
 
   _hangUpPubStream() async {
     log.info("will hang up the stream by pub nearlly ");
+    //这里就按照发布时间的顺序，挂断最近发布的流，一般的SDK逻辑是挂断指定的流，所以我挂断时需要根据流id去挂断
+    var pubStreamId;
+    for (var key in pubStreamMap.keys.toList().reversed) {
+      log.info("the last pubStream is $key ,the pubStream will close ");
+      pubStreamId = key;
+      break;
+    }
+    HangUpReq hangUpReq = HangUpReq();
+    hangUpReq.protoType = "hangUp";
+    hangUpReq.pubStreamFlag = true;
+    hangUpReq.roomId = widget.roomId;
+    hangUpReq.userId = widget.userId;
+    hangUpReq.userName = widget.userId;
+    hangUpReq.streamId = pubStreamId;
+    socketIoClient.emit(hangUpReq);
+    _closePubStream(pubStreamId);
   }
 
   _leaveLive() async {
     log.info("leave the live room, and hang up my stream  ");
+    LeaveReq leaveReq = LeaveReq();
+    leaveReq.protoType = "leave";
+    leaveReq.roomId = widget.roomId;
+    leaveReq.userId = widget.userId;
+    leaveReq.userName = widget.userId;
+    socketIoClient.emit(leaveReq);
+    pubStreamMap.keys.toList().forEach(((pubstreamId) {
+      log.info("will close the pubStream $pubstreamId");
+      _closePubStream(pubstreamId);
+    }));
+    subStreamMap.keys.toList().forEach((subStreamId) {
+      log.info("will close the subStream $subStreamId");
+      _closeSubStream(subStreamId);
+    });
+    widget.closeCallback(widget.roomId, widget.liveViewElementIndex, false);
   }
 
   _closeLive() async {
@@ -573,11 +612,15 @@ class _LiveViewElementState extends State<LiveViewElement> {
       case "negoEvent":
         _dispatchSignal(event);
         break;
+      case "hangUpEvent":
+        _onHangUpEvent(event);
+        break; // Add this missing break
       case "closeEvent":
         _onCloseEvent(event);
         break;
       case "leaveEvent":
         _onLeaveEvent(event);
+        break;
       default:
         log.info(
             "can't dispatch the event, maybe no release feature,ignore the event");
@@ -629,6 +672,17 @@ class _LiveViewElementState extends State<LiveViewElement> {
 
   _onPubRsp(event) {
     log.info("receive pubRsp ");
+  }
+
+  _onHangUpEvent(event) {
+    log.info("receive hangUpEvent");
+    //只能收到pub流的hangup，但是pub流hangUp时下发的是sub流的信息
+    HangUpEvent hangUpEvent = HangUpEvent.fromJson(event);
+    log.info("the deserailize hangUpEvent is $hangUpEvent");
+    for (var subStreamId in hangUpEvent.streamId ?? []) {
+      _closeSubStream(subStreamId);
+    }
+    _rebuildRTCVideoView();
   }
 
   _onCloseEvent(event) {
@@ -891,6 +945,8 @@ class _LiveViewElementState extends State<LiveViewElement> {
 
   _closeSubStream(String streamId) {
     log.info("begin close subStream, will close $streamId");
+    log.info(
+        "before close subStream, print the map, the subStreamMap $subStreamMap ,the subPeerMap $subPeerMap");
     subStreamMap.remove(streamId);
     // _closeRtcPeerRenderer(streamId);
     RtcPeerRendererStream? rtcPeerRendererPair = subPeerMap[streamId];
@@ -906,9 +962,12 @@ class _LiveViewElementState extends State<LiveViewElement> {
     log.info("begin close rtcPeerRenderer, by streamId $streamId");
     rtcPeerRendererPair.rtcPeerConnection.close();
     rtcPeerRendererPair.rtcPeerConnection.dispose();
-    rtcPeerRendererPair.rtcVideoRenderer.srcObject
-        ?.getTracks()
-        .forEach((track) => track.stop());
+
+    //这里分别断开了每个轨道，如果一个人sub了同一个人多次，这里的断开是不是有问题
+    //还真有这个问题，这里就不断开轨道，直接销毁peerConnection了，但是不断开是不是也有问题？
+    // rtcPeerRendererPair.rtcVideoRenderer.srcObject
+    //     ?.getTracks()
+    //     .forEach((track) => track.stop());
     rtcPeerRendererPair.rtcVideoRenderer.srcObject = null;
     rtcPeerRendererPair.rtcVideoRenderer.dispose();
     if (rtcPeerRendererPair.liveWidget != null) {
@@ -929,5 +988,6 @@ class _LiveViewElementState extends State<LiveViewElement> {
       _closeRtcPeerRenderer(streamId, rtcPeerRendererPair);
       pubPeerMap.remove(streamId);
     }
+    _rebuildRTCVideoView();
   }
 }

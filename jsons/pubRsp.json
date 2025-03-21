@@ -1,0 +1,12 @@
+{
+    "protoType": "pubRsp",
+    "roomId": "3234167710566621215R",
+    "userId": "9527329",
+    "pubStream": {
+        "streamId": "pub9527329_1730816310805_0",
+        "userId": "9527329",
+        "pubFlag": true,
+        "audio": true,
+        "video": true
+    }
+}

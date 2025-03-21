@@ -1,0 +1,45 @@
+{
+    "protoType":"enterRsp",
+    "roomId":"3180125865173278724R",
+    "userId":"104",
+    "otherUsers":[
+
+    ],
+    "peerConfig":{
+        "iceTransportPolicy":"all",
+        "bundlePolicy":"balanced",
+        "rtcpMuxPolicy":"require",
+        "iceServers":[
+            {
+                "urls":"turn:172.18.58.89:13902",
+                "username":"faker",
+                "credential":"lck"
+            },
+            {
+                "urls":"turn:192.168.0.102:13902",
+                "username":"clearlove",
+                "credential":"lpl"
+            }
+        ]
+    },
+    "constraints":{
+        "video":{
+            "width":320,
+            "height":240,
+            "frameRate":30
+        },
+        "audio":true
+    },
+    "flutterRtcMediaConf":{
+        "videoMandatory":{
+            "minHeight":240,
+            "minFrameRate":30,
+            "minWidth":320
+        },
+        "audio":true
+    },
+    "userPubMap":{
+        "9527":["pub_123_1"]
+    },
+    "anchorFlag": false
+}

@@ -1,0 +1,29 @@
+{
+    "liveProgramId": "3234167710566621186L",
+    "liveRoomId": "3234167710566621185R",
+    "rtcUserId": "9527328",
+    "liveAddress": {
+        "query": "connectionId=9527328&roomId=3234167710566621185R&token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyMDI4NWJmZi01YmMxLTRhYjEtODM2Yi0yMWY5NmQ0N2E0MWYiLCJzdWIiOiJ7XCJ1c2VySWRcIjpcIjk1MjczMjhcIixcInJvb21JZFwiOlwiMzIzNDE2NzcxMDU2NjYyMTE4NVJcIn0iLCJpc3MiOiJzeXN0ZW0iLCJpYXQiOjE3MzA4MTI2NzksImV4cCI6MTczMDgxNjI3OX0.U_UETFZcOt9B44zwJ1aEgYhlT71DD6nmP55Ro0XwMMI",
+        "connectionId": "9527328",
+        "url": "http://127.0.0.1:33000",
+        "roomId": "3234167710566621185R",
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIyMDI4NWJmZi01YmMxLTRhYjEtODM2Yi0yMWY5NmQ0N2E0MWYiLCJzdWIiOiJ7XCJ1c2VySWRcIjpcIjk1MjczMjhcIixcInJvb21JZFwiOlwiMzIzNDE2NzcxMDU2NjYyMTE4NVJcIn0iLCJpc3MiOiJzeXN0ZW0iLCJpYXQiOjE3MzA4MTI2NzksImV4cCI6MTczMDgxNjI3OX0.U_UETFZcOt9B44zwJ1aEgYhlT71DD6nmP55Ro0XwMMI"
+    },
+    "liveProgramInfo": {
+        "createUserId": "9527332",
+        "liveProgramId": "4017797199189639170L",
+        "liveRoomId": "4017797199189639169R",
+        "roomName": "s14观赛直播间1",
+        "roomDesc": "云顶之弈等你来战",
+        "cover": "123",
+        "type": "mobileVideo",
+        "state": 10,
+        "liveAddress": {
+            "query": "connectionId=95274&roomId=4017797199189639169R&token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1ZTMxN2IwNy1iMjIxLTRkYmQtYTRlYi1iMDI3NTBlNjIzZTYiLCJzdWIiOiJ7XCJ1c2VySWRcIjpcIjk1Mjc0XCIsXCJyb29tSWRcIjpcIjQwMTc3OTcxOTkxODk2MzkxNjlSXCJ9IiwiaXNzIjoic3lzdGVtIiwiaWF0IjoxNzMxNTgyNjEzLCJleHAiOjE3MzE1ODYyMTN9.gIHtwB1UzUokcQFogfWN0OjCBiaKNqQLjQZvjwQjCao",
+            "connectionId": "95274",
+            "url": "http://127.0.0.1:33000",
+            "roomId": "4017797199189639169R",
+            "token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1ZTMxN2IwNy1iMjIxLTRkYmQtYTRlYi1iMDI3NTBlNjIzZTYiLCJzdWIiOiJ7XCJ1c2VySWRcIjpcIjk1Mjc0XCIsXCJyb29tSWRcIjpcIjQwMTc3OTcxOTkxODk2MzkxNjlSXCJ9IiwiaXNzIjoic3lzdGVtIiwiaWF0IjoxNzMxNTgyNjEzLCJleHAiOjE3MzE1ODYyMTN9.gIHtwB1UzUokcQFogfWN0OjCBiaKNqQLjQZvjwQjCao"
+        }
+    }
+}

@@ -1,6 +1,8 @@
 export 'enterEvent.dart' ; 
 export 'enterReq.dart' ; 
 export 'enterRsp.dart' ; 
+export 'hangUpEvent.dart' ; 
+export 'hangUpReq.dart' ; 
 export 'leaveEvent.dart' ; 
 export 'leaveReq.dart' ; 
 export 'liveProgramInfo.dart' ; 

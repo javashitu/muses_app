@@ -1,0 +1,7 @@
+{
+    "protoType": "hangUpEvent",
+    "userId": "664",
+    "userName": "664",
+    "streamId?": "$[]String",
+    "hangupReason?": "主播挂断"
+}

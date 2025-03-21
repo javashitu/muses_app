@@ -2,9 +2,12 @@ import 'dart:math';
 import '../util/common_logger.dart';
 
 class DomainConfig {
-  static const String musesBizDomain = "http://192.168.131.24:9090";
+  // static const String musesBizDomain = "http://117.72.39.18/muses-biz-rest";
+  static const String musesBizDomain = "http://127.0.0.1:9091";
 
-  static const String musesEngineDomain = "http://192.168.131.24:8031";
+  // static const String musesEngineDomain = "http://117.72.39.18/muses-engine";
+  static const String musesEngineDomain = "http://127.0.0.1:8031";
+
 }
 
 class UserMock {

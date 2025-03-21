@@ -1,0 +1,17 @@
+{
+    "createUserId": "9527332",
+    "liveProgramId": "4017797199189639170L",
+    "liveRoomId": "4017797199189639169R",
+    "roomName": "s14观赛直播间1",
+    "roomDesc": "云顶之弈等你来战",
+    "cover": "123",
+    "type": "mobileVideo",
+    "state": 10,
+    "liveAddress": {
+        "query": "connectionId=95274&roomId=4017797199189639169R&token=eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1ZTMxN2IwNy1iMjIxLTRkYmQtYTRlYi1iMDI3NTBlNjIzZTYiLCJzdWIiOiJ7XCJ1c2VySWRcIjpcIjk1Mjc0XCIsXCJyb29tSWRcIjpcIjQwMTc3OTcxOTkxODk2MzkxNjlSXCJ9IiwiaXNzIjoic3lzdGVtIiwiaWF0IjoxNzMxNTgyNjEzLCJleHAiOjE3MzE1ODYyMTN9.gIHtwB1UzUokcQFogfWN0OjCBiaKNqQLjQZvjwQjCao",
+        "connectionId": "95274",
+        "url": "http://127.0.0.1:33000",
+        "roomId": "4017797199189639169R",
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1ZTMxN2IwNy1iMjIxLTRkYmQtYTRlYi1iMDI3NTBlNjIzZTYiLCJzdWIiOiJ7XCJ1c2VySWRcIjpcIjk1Mjc0XCIsXCJyb29tSWRcIjpcIjQwMTc3OTcxOTkxODk2MzkxNjlSXCJ9IiwiaXNzIjoic3lzdGVtIiwiaWF0IjoxNzMxNTgyNjEzLCJleHAiOjE3MzE1ODYyMTN9.gIHtwB1UzUokcQFogfWN0OjCBiaKNqQLjQZvjwQjCao"
+    }
+}

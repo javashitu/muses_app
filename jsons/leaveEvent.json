@@ -1,0 +1,7 @@
+{
+    "protoType": "enterEvent",
+    "userId": "664",
+    "userName": "664",
+    "hangUpStreamId?": "$[]String",
+    "closePeerConnectionList?": "$[]String"
+}
