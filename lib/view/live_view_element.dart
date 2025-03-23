@@ -463,6 +463,20 @@ class _LiveViewElementState extends State<LiveViewElement> {
 
   _closeLive() async {
     log.info("close the live room, and hang up all stream  ");
+    CloseReq closeReq = CloseReq();
+    closeReq.protoType = "close";
+    closeReq.roomId = widget.roomId;
+    closeReq.userId = widget.userId;
+    closeReq.userName = widget.userId;
+    socketIoClient.emit(closeReq);
+    pubStreamMap.keys.toList().forEach(((pubstreamId) {
+      log.info("will close the pubStream $pubstreamId");
+      _closePubStream(pubstreamId);
+    }));
+    subStreamMap.keys.toList().forEach((subStreamId) {
+      log.info("will close the subStream $subStreamId");
+      _closeSubStream(subStreamId);
+    });
   }
 
   _doEnterRoom(String roomId, String userId, String userName) async {
