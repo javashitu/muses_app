@@ -14,17 +14,16 @@ class LiveViewPage extends StatefulWidget {
 
 class _LiveViewPageState extends State<LiveViewPage> {
   //緩存的直播信息
-  List<LiveProgramInfo> activeliveProgramInfo = [];
+  List<LiveProgramInfo> activeliveProgramInfoList = [];
   late Future<List<LiveProgramInfo>> future;
   LiveRestClient liveRestClient = LiveRestClient.random();
 
   static const int _maxLoadCount = 100;
-  static const int _pageSize = 20;
+  // static const int _pageSize = 20;
   //这个pageIndex不是滑动翻页的页码，而是去查询直播数据时的页码
   int _pageIndex = 0;
   int _loadCount = 0;
   bool _joinFlag = false;
-  bool _pubFlag = false;
 
   late PageController _pageController;
 
@@ -45,16 +44,9 @@ class _LiveViewPageState extends State<LiveViewPage> {
     log.info(
         "liveProgramInfoList is not null, will add live data to page liveList the live count is ${liveProgramInfoList.length}");
     // setState(() {
-    activeliveProgramInfo.addAll(liveProgramInfoList);
-    _loadCount = activeliveProgramInfo.length;
+    activeliveProgramInfoList.addAll(liveProgramInfoList);
+    _loadCount = activeliveProgramInfoList.length;
     // });
-  }
-
-  _joinLive() {
-    log.info("will join the live ");
-    setState(() {
-      _joinFlag = true;
-    });
   }
 
   Widget _buildLiveElement(LiveProgramInfo liveProgramInfo, int index) {
@@ -103,6 +95,8 @@ class _LiveViewPageState extends State<LiveViewPage> {
             log.info(
                 "liveProgramInfo future data is ready, will add live info to list and build livePageView");
             _addLive(parsedData);
+            //每次加载完毕后清空
+            snapshot.data?.clear();
 
             return PageView.builder(
               itemCount: _maxLoadCount,
@@ -136,7 +130,7 @@ class _LiveViewPageState extends State<LiveViewPage> {
                 }
                 if (!_joinFlag) {
                   LiveProgramInfo liveProgramInfo =
-                      activeliveProgramInfo[index % _loadCount];
+                      activeliveProgramInfoList[index % _loadCount];
                   var userId = liveProgramInfo.createUserId;
                   // var buttonName = "加入${userId}的直播";
                   return Center(
@@ -154,7 +148,7 @@ class _LiveViewPageState extends State<LiveViewPage> {
                   );
                 }
                 LiveProgramInfo liveProgramInfo =
-                    activeliveProgramInfo[index % _loadCount];
+                    activeliveProgramInfoList[index % _loadCount];
 
                 return _buildLiveElement(liveProgramInfo, index);
               },
@@ -182,32 +176,41 @@ class _LiveViewPageState extends State<LiveViewPage> {
       String roomId = liveProgramInfo.liveAddress["roomId"];
 
       _joinFlag = true;
-      _pubFlag = true;
       log.info("pub live finish the room $roomId ");
       setState(() => _addLive([liveProgramInfo]));
     });
   }
 
-  _listOtherLive() {
-    liveRestClient.listActiveLiveProgram(_pageIndex).then((value) {
-      setState(() {
-        _addLive(value);
-      });
+  _joinLive() {
+    log.info("will join the live ");
+    setState(() {
+      _joinFlag = true;
     });
   }
 
+  // _listOtherLive() {
+  //   liveRestClient.listActiveLiveProgram(_pageIndex).then((value) {
+  //     setState(() {
+  //       _addLive(value);
+  //     });
+  //   });
+  // }
+
   _liveCloseCallback(String roomId, int index, bool closeFlag) {
+    log.info(
+        "live has closed, the closed room $roomId ,the index $index ,the closeFlag $closeFlag");
     _joinFlag = false;
-    _pubFlag = false;
     int removeIndex = index % _loadCount;
     LiveProgramInfo? liveProgramInfo;
     if (closeFlag) {
-      if (activeliveProgramInfo.isNotEmpty) {
-//退出后不一定要移除,但是直播关闭时移除
-        liveProgramInfo = activeliveProgramInfo.removeAt(removeIndex);
+      if (activeliveProgramInfoList.isNotEmpty) {
+        log.info(
+            "will remove live at index $index ,the activeliveProgramInfoList size is ${activeliveProgramInfoList.length}");
+        //退出后不一定要移除,但是直播关闭时移除
+        liveProgramInfo = activeliveProgramInfoList.removeAt(removeIndex);
       }
     } else {
-      liveProgramInfo = activeliveProgramInfo[index];
+      liveProgramInfo = activeliveProgramInfoList[index];
     }
 
     if (liveProgramInfo == null) {
@@ -224,7 +227,7 @@ class _LiveViewPageState extends State<LiveViewPage> {
     }
 
     setState(() {
-      _loadCount = activeliveProgramInfo.length;
+      _loadCount = activeliveProgramInfoList.length;
     });
   }
 }

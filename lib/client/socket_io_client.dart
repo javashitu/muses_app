@@ -80,7 +80,7 @@ class _SocketIoClientDemoState extends State<SocketIoClientDemo> {
     log.info("the rsp $data");
   }
 
-  _closeHandler(data){
+  _closeHandler(data) {
     log.info("connection has closed");
   }
 }
@@ -90,7 +90,7 @@ class SocketIoClient {
   final String connectionId;
   final String roomId;
   final String token;
-  
+
   final Function messageHandler;
   final Function closeHndler;
   SocketIoClient(
@@ -132,7 +132,7 @@ class SocketIoClient {
 
   emit(dynamic message) {
     log.info("emit to server the message ${message}");
-    socket.emit("message",message);
+    socket.emit("message", message);
   }
 
   close(dynamic closeMessage) {
@@ -140,5 +140,11 @@ class SocketIoClient {
       emit(closeMessage);
     }
     socket.close();
+  }
+
+  closeQuietly() {
+    if (socket.active) {
+      socket.close();
+    }
   }
 }
